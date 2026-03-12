@@ -1,12 +1,12 @@
 package com.uniquehire.rolemanagement.dto.response;
 import lombok.*;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrganizationResponseDTO {
+public class OrganizationResponseDto {
+
     private Long orgId;
     private String orgName;
     private String address;

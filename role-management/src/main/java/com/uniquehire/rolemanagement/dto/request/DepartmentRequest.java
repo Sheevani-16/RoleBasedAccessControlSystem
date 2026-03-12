@@ -7,21 +7,23 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class DepartmentRequest {
 
     @NotNull(message = "Department name is required")
     private DepartmentName departmentName;
 
-    @NotNull(message = "Number of trainings is required")
-    @Min(value = 0, message = "Number of trainings cannot be negative")
+    @NotNull(message = "Number of trainings going on is required")
     private Integer numberOfTrainingsGoingOn;
 
     @NotNull(message = "Description is required")
-    @Size(min = 3, max = 500, message = "Description must be between 3 and 500 characters")
     private String description;
 
+    @NotNull(message = "Organization id is required")
+    private Long organizationId;
 }

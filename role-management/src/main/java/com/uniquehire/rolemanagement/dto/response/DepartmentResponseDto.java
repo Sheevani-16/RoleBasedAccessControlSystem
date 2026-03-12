@@ -4,14 +4,19 @@ import com.uniquehire.rolemanagement.enums.DepartmentName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.uniquehire.rolemanagement.enums.DepartmentName;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DepartmentResponse {
+@Builder
+public class DepartmentResponseDto {
 
     private Long id;
     private DepartmentName departmentName;
     private Integer numberOfTrainingsGoingOn;
     private String description;
+    private Long organizationId;
 }

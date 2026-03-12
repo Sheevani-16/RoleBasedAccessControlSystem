@@ -4,25 +4,15 @@ package com.uniquehire.rolemanagement.service;
 //import com.uniquehire.departmentservice.dto.response.ApiResponse;
 //import com.uniquehire.departmentservice.dto.response.DepartmentResponse;
 //import com.uniquehire.departmentservice.enums.DepartmentName;
-
 import com.uniquehire.rolemanagement.dto.request.DepartmentRequest;
-import com.uniquehire.rolemanagement.dto.response.ApiResponse;
-import com.uniquehire.rolemanagement.dto.response.DepartmentResponse;
-import com.uniquehire.rolemanagement.enums.DepartmentName;
+import com.uniquehire.rolemanagement.dto.response.DepartmentResponseDto;
 
-import java.util.Map;
+import java.util.List;
 
 public interface DepartmentService {
-
-    ApiResponse<DepartmentResponse> addDepartment(DepartmentRequest request);
-
-    ApiResponse<DepartmentResponse> updateDepartment(Long id, DepartmentRequest request);
-
-    ApiResponse<Map<String, Object>> getAllDepartments(int page, int size);
-
-    ApiResponse<DepartmentResponse> getDepartmentById(Long id);
-
-    ApiResponse<DepartmentResponse> getDepartmentByName(DepartmentName departmentName);
-
-    ApiResponse<String> deleteDepartment(Long id);
+    DepartmentResponseDto createDepartment(DepartmentRequest dto);
+    DepartmentResponseDto getDepartmentById(Long id);
+    List<DepartmentResponseDto> getAllDepartments();
+    DepartmentResponseDto updateDepartment(Long id, DepartmentRequest dto);
+    void deleteDepartment(Long id);
 }

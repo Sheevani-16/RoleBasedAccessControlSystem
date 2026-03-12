@@ -1,87 +1,63 @@
 package com.uniquehire.rolemanagement.service.impl;
-
-
 import com.uniquehire.rolemanagement.dto.request.TrainingRequestDto;
 import com.uniquehire.rolemanagement.dto.response.TrainingResponseDto;
+import com.uniquehire.rolemanagement.entity.Department;
 import com.uniquehire.rolemanagement.entity.Training;
-import com.uniquehire.rolemanagement.exception.ResourceNotFoundException;
+import com.uniquehire.rolemanagement.repository.DepartmentRepository;
 import com.uniquehire.rolemanagement.repository.TrainingRepository;
 import com.uniquehire.rolemanagement.service.TrainingService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TrainingServiceImpl implements TrainingService {
-    private static final Logger logger =
-            LoggerFactory.getLogger(TrainingServiceImpl.class);
 
-    @Autowired
-    private TrainingRepository repository;
+    private final TrainingRepository trainingRepository;
+    private final DepartmentRepository departmentRepository;
 
     @Override
-    public TrainingResponseDto createTraining(TrainingRequestDto dto){
+    public TrainingResponseDto createTraining(TrainingRequestDto dto) {
+        Department department = departmentRepository.findById(dto.getDepartmentId())
+                .orElseThrow(() -> new RuntimeException("Department not found with id: " + dto.getDepartmentId()));
 
-        logger.info("Creating new training");
+        Training training = Training.builder()
+                .trainingName(dto.getTrainingName())
+                .batchNo(dto.getBatchNo())
+                .trainerName(dto.getTrainerName())
+                .startDate(dto.getStartDate())
+                .endDate(dto.getEndDate())
+                .noOfTrainees(dto.getNoOfTrainees())
+                .department(department)
+                .build();
 
-        Training training=new Training();
-
-        training.setTrainingName(dto.getTrainingName());
-        training.setBatchNo(dto.getBatchNo());
-        training.setTrainerName(dto.getTrainerName());
-        training.setStartDate(dto.getStartDate());
-        training.setEndDate(dto.getEndDate());
-        training.setNoOfTrainees(dto.getNoOfTrainees());
-
-        Training saved=repository.save(training);
-
-        logger.info("Training created with ID {}",saved.getTrainingId());
-
-        return mapToResponse(saved);
+        return mapToResponse(trainingRepository.save(training));
     }
 
     @Override
-    public Page<TrainingResponseDto> getAllTrainings(int page,int size){
-
-        logger.info("Fetching trainings page {}",page);
-
-        Page<Training> trainings=repository.findAll(PageRequest.of(page,size));
-
-        List<TrainingResponseDto> list=new ArrayList<>();
-
-        for(Training t:trainings.getContent()){
-
-            list.add(mapToResponse(t));
-
-        }
-
-        return new PageImpl<>(list,trainings.getPageable(),trainings.getTotalElements());
-
-    }
-
-    @Override
-    public TrainingResponseDto getTrainingById(Long id){
-
-        logger.info("Fetching training {}",id);
-
-        Training training=repository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Training not found"));
-
+    public TrainingResponseDto getTrainingById(Long id) {
+        Training training = trainingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Training not found with id: " + id));
         return mapToResponse(training);
     }
 
     @Override
-    public TrainingResponseDto updateTraining(Long id,TrainingRequestDto dto){
+    public List<TrainingResponseDto> getAllTrainings() {
+        return trainingRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
 
-        Training training=repository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Training not found"));
+    @Override
+    public TrainingResponseDto updateTraining(Long id, TrainingRequestDto dto) {
+        Training training = trainingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Training not found with id: " + id));
+
+        Department department = departmentRepository.findById(dto.getDepartmentId())
+                .orElseThrow(() -> new RuntimeException("Department not found with id: " + dto.getDepartmentId()));
 
         training.setTrainingName(dto.getTrainingName());
         training.setBatchNo(dto.getBatchNo());
@@ -89,39 +65,28 @@ public class TrainingServiceImpl implements TrainingService {
         training.setStartDate(dto.getStartDate());
         training.setEndDate(dto.getEndDate());
         training.setNoOfTrainees(dto.getNoOfTrainees());
+        training.setDepartment(department);
 
-        Training updated=repository.save(training);
-
-        logger.info("Training updated {}",id);
-
-        return mapToResponse(updated);
+        return mapToResponse(trainingRepository.save(training));
     }
 
     @Override
-    public void deleteTraining(Long id){
-
-        Training training=repository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Training not found"));
-
-        repository.delete(training);
-
-        logger.info("Training deleted {}",id);
-
+    public void deleteTraining(Long id) {
+        Training training = trainingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Training not found with id: " + id));
+        trainingRepository.delete(training);
     }
 
-    private TrainingResponseDto mapToResponse(Training training){
-
-        TrainingResponseDto dto=new TrainingResponseDto();
-
-        dto.setTrainingId(training.getTrainingId());
-        dto.setTrainingName(training.getTrainingName());
-        dto.setBatchNo(training.getBatchNo());
-        dto.setTrainerName(training.getTrainerName());
-        dto.setStartDate(training.getStartDate());
-        dto.setEndDate(training.getEndDate());
-        dto.setNoOfTrainees(training.getNoOfTrainees());
-
-        return dto;
-
+    private TrainingResponseDto mapToResponse(Training training) {
+        return TrainingResponseDto.builder()
+                .trainingId(training.getTrainingId())
+                .trainingName(training.getTrainingName())
+                .batchNo(training.getBatchNo())
+                .trainerName(training.getTrainerName())
+                .startDate(training.getStartDate())
+                .endDate(training.getEndDate())
+                .noOfTrainees(training.getNoOfTrainees())
+                .departmentId(training.getDepartment().getId())
+                .build();
     }
 }

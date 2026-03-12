@@ -7,5 +7,10 @@ public enum DepartmentName {
     TRAINING,
     RECRUITMENT,
     MARKETING,
-    FINANCE
+    FINANCE,
+    JAVA,
+    PYTHON,
+    DEVOPS,
+    TESTING,
+    SALES
 }

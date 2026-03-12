@@ -1,7 +1,6 @@
 package com.uniquehire.rolemanagement.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-
 @Getter
 @Setter
 @NoArgsConstructor
